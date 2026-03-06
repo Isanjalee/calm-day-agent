@@ -1,31 +1,70 @@
-import os
 import smtplib
-from email.mime.text import MIMEText
+from email import encoders
+from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from pathlib import Path
 
-def send_email(subject: str, body: str) -> str:
-    sender = os.getenv("EMAIL_ADDRESS")
-    password = os.getenv("EMAIL_APP_PASSWORD")
-    recipients = os.getenv("TO_EMAILS")
 
-    if not sender or not password or not recipients:
-        return "Email settings missing. Check .env: EMAIL_ADDRESS, EMAIL_APP_PASSWORD, TO_EMAILS"
+def send_email(
+    subject: str,
+    body: str,
+    *,
+    sender: str,
+    password: str,
+    recipients: list[str],
+    calendar_attachments: list[dict[str, str]] | None = None,
+    file_attachments: list[dict[str, str]] | None = None,
+) -> str:
+    if not sender or not password:
+        return "Email settings missing. Check .env: EMAIL_ADDRESS and EMAIL_APP_PASSWORD"
+    if not recipients:
+        return "No email recipients configured."
 
-    to_emails = [e.strip() for e in recipients.split(",") if e.strip()]
-    if not to_emails:
-        return "TO_EMAILS is empty."
-
-    msg = MIMEMultipart()
+    msg = MIMEMultipart("mixed")
     msg["From"] = sender
-    msg["To"] = ", ".join(to_emails)
+    msg["To"] = ", ".join(recipients)
     msg["Subject"] = subject
-    msg.attach(MIMEText(body, "plain"))
+    msg.attach(MIMEText(body, "plain", "utf-8"))
+
+    for attachment in calendar_attachments or []:
+        part = MIMEText(attachment["content"], "calendar", "utf-8")
+        part.replace_header(
+            "Content-Type",
+            (
+                'text/calendar; method=REQUEST; charset="utf-8"; '
+                f'name="{attachment["filename"]}"'
+            ),
+        )
+        part["Content-Class"] = "urn:content-classes:calendarmessage"
+        part["Content-Disposition"] = f'attachment; filename="{attachment["filename"]}"'
+        msg.attach(part)
+
+    sent_files = 0
+    for attachment in file_attachments or []:
+        file_path = Path(str(attachment.get("path", "")))
+        if not file_path.exists() or not file_path.is_file():
+            continue
+
+        part = MIMEBase("application", "octet-stream")
+        part.set_payload(file_path.read_bytes())
+        encoders.encode_base64(part)
+        filename = attachment.get("filename") or file_path.name
+        part["Content-Disposition"] = f'attachment; filename="{filename}"'
+        msg.attach(part)
+        sent_files += 1
 
     try:
         with smtplib.SMTP("smtp.gmail.com", 587) as server:
             server.starttls()
             server.login(sender, password)
-            server.sendmail(sender, to_emails, msg.as_string())
-        return "Email sent successfully 💌"
-    except Exception as e:
-        return f"Failed to send email: {e}"
+            server.sendmail(sender, recipients, msg.as_string())
+    except Exception as exc:
+        return f"Failed to send email: {exc}"
+
+    invite_count = len(calendar_attachments or [])
+    return (
+        f"Email sent to {len(recipients)} recipient(s)"
+        f" with {invite_count} calendar invite(s)"
+        f" and {sent_files} file attachment(s)."
+    )

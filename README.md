@@ -1,131 +1,102 @@
-# calm-day-agent 🌿
+# calm-day-agent
 
-Calm Day Agent is a gentle AI assistant that helps you **plan your day**, **manage tasks**, and **stay aligned** with a calm vibe.  
-It runs locally on your computer, saves your plan/tasks to a local file, and can **email your daily plan** to you (and someone you care about).
+Calm Day Agent now includes a local browser UI for three separate workflows:
 
-> Note: This version uses **Groq (cloud LLM)** for fast responses. Your data (tasks/plan) is stored locally in `memory.json`.  
-> If you want a fully offline version later, you can swap the LLM backend (e.g., local models).
+- `Day Plan`: generate, edit, save, and send only the schedule for the day
+- `Diary`: save private journal entries
+- `Book`: save longer-form writing or notes
 
----
+Diary and book content are stored locally but are never included when you send the day plan to your boyfriend.
 
-## Features ✨
+## Features
 
-- ✅ **Day planning** (work + exercise + study + breaks)  
-- ✅ **Task management** (add / list / mark done)  
-- ✅ **Plan memory** (saved locally in `memory.json`)  
-- ✅ **Email your plan** (Gmail App Password via SMTP)  
-- ✅ **Safe for GitHub** (secrets kept in `.env`, ignored by git)
-
----
-
-## Commands (What you can type)
-
-### Day planning
-- `Plan my day calmly. I work 8am–5pm. I want 1 hour exercise and 2 hours study.`
-- `Show my plan`
-- `plan` (shortcut)
-
-### Tasks
-- `Save this task: reply to emails`
-- `Show my tasks`
-- `Mark task 1 as done`
-
-### Email
-- `Email my plan`
-- `Email this message: Hi Dulan, today I built my first AI agent 💚`
-
----
+- Modern local web UI with tabs for day planning, diary writing, and book drafting
+- AI-assisted day-plan generation from your actual prompt
+- Editable timeline blocks before saving or sending
+- Email delivery for the saved day plan only
+- Calendar invite attachments for shared activities in the day plan
+- Local storage in `memory.json`
 
 ## Requirements
 
 - Windows 10/11
-- Python 3.10+ (recommended)
+- Python 3.10+
 - A Groq API key
-- A Gmail account with **App Password** enabled (for sending email)
+- A Gmail account with an App Password
 
----
+## Setup
 
-## Setup (Windows)
+1. Create and activate the virtual environment:
 
-### 1) Clone the repo
-```bash
-git clone https://github.com/Isanjalee/calm-day-agent.git
-cd calm-day-agent
-```
-### 2) Create & activate virtual environment
-```bash
+```powershell
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 ```
-### 3) Install dependencies
-```bash
+
+2. Install dependencies:
+
+```powershell
 pip install groq python-dotenv rich
 ```
-### 4) Create a .env file (IMPORTANT)
-- Create a file named .env in the project root:
-```bash
+
+3. Create `.env` in the project root:
+
+```env
 GROQ_API_KEY=your_groq_key_here
 
 EMAIL_ADDRESS=yourgmail@gmail.com
 EMAIL_APP_PASSWORD=your_gmail_app_password_here
 
-# Comma-separated recipients (you + boyfriend/friend etc.)
-TO_EMAILS=you@gmail.com,boyfriend@gmail.com
+USER_NAME=Isanjalee
+PARTNER_NAME=Dulan
+PARTNER_EMAIL=dulan@example.com
+
+PLAN_RECIPIENTS=you@gmail.com,dulan@example.com
+APP_TIMEZONE=Asia/Colombo
+CALENDAR_ALERT_MINUTES=30
+SHARED_ACTIVITY_KEYWORDS=together,shared,date night,team activity,with both of us,with dulan
 ```
-✅ .env is ignored by git (safe)
 
----
+## Run the UI
 
-## Gmail App Password (for Email Sending)
-
-Gmail SMTP requires an App Password (not your normal password).
-
-1. Enable 2-Step Verification on your Google Account
-2. Create an App Password for Mail
-3. Put that 16-character password into EMAIL_APP_PASSWORD in your .env
-
-If you see an error like: 5.7.9 Application-specific password required
-→ your App Password isn’t set correctly.
-
----
-
-## Run the agent 🚀
-```bash
-python agent.py
+```powershell
+.\.venv\Scripts\python.exe webapp.py
 ```
-Then try:
-- Plan my day calmly. I work 8am–5pm. I want 1 hour exercise and 2 hours study.
-- Email my plan
 
----
-## Project Files
-- agent.py — main CLI agent
-- llm_groq.py — Groq LLM wrapper
-- tools.py — local memory (tasks/plan)
-- emailer.py — Gmail SMTP email sender
-- memory.json — local saved data (ignored by git)
+Then open:
 
----
-
-## Security 🔐
-This repo is designed to be safe to publish:
-- ✅ Secrets are stored only in .env
-- ✅ .env, .venv, memory.json are ignored via .gitignore
-- ❌ Never commit API keys or passwords into code
-
----
-
-## Roadmap ideas 🌱
-- Auto-send morning plan (scheduled)
-- Night review + tomorrow planning
-- Calendar export (.ics)
-- Fully offline backend (local model support)
-
----
-
-## License
-MIT (or update this section if you prefer a different license)
-```bash
-If you want, I can also generate a clean **`.gitignore`** and a short **demo section** with screenshots / sample output.
-::contentReference[oaicite:0]{index=0}
+```text
+http://127.0.0.1:8088
 ```
+
+## How it works
+
+1. Open the `Day Plan` tab.
+2. Describe the day you actually want.
+3. Click `Generate plan`.
+4. Edit the summary, top priorities, timeline blocks, participants, and invite toggles.
+5. Click `Save day plan`.
+6. Click `Send to <partner>` when you want to email only the day plan.
+
+Use the `Diary` and `Book` tabs for personal writing. Those entries save locally but are not part of the email payload.
+
+## Shared activities and invites
+
+If a schedule block includes both you and your partner and `Invite` is turned on, the app sends an `.ics` calendar attachment with the day-plan email. Gmail and Google Calendar usually recognize these as event invites.
+
+## Files
+
+- `webapp.py`: local HTTP server and API endpoints
+- `web/index.html`: browser UI
+- `web/assets/app.css`: styling and layout
+- `web/assets/app.js`: UI behavior
+- `planner_service.py`: plan generation, normalization, and send logic
+- `calendar_utils.py`: shared event detection and `.ics` invite generation
+- `emailer.py`: Gmail delivery
+- `tools.py`: local storage for plan, diary, and book content
+- `agent.py`: optional CLI interface
+
+## Security
+
+- Keep secrets only in `.env`
+- Do not commit `.env`, `.venv`, or `memory.json`

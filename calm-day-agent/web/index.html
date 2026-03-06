@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Calm Day Studio</title>
+    <link rel="stylesheet" href="/assets/app.css">
+  </head>
+  <body>
+    <div class="backdrop backdrop-a"></div>
+    <div class="backdrop backdrop-b"></div>
+
+    <main class="shell">
+      <section class="hero hero-with-bg card">
+        <div class="hero-brand">
+          <div class="image-card logo-card is-fallback">
+            <img
+              class="image-fill"
+              src="/assets/images/logo-mark.png"
+              alt="Calm Day Studio logo"
+              loading="eager"
+            >
+            <div class="logo-fallback" aria-hidden="true">
+              <span class="logo-sun"></span>
+              <span class="logo-moon"></span>
+            </div>
+          </div>
+          <div class="brand-copy">
+            <span class="brand-title">Calm Day Studio</span>
+          </div>
+        </div>
+        <div class="hero-copy">
+          <h1>Plan the day. Keep the diary. Draft the book.</h1>
+          <p class="lede">
+            Save each kind of writing separately. Only your day plan gets sent when you choose
+            <span id="partner-label">Send to Partner</span>.
+          </p>
+          <div class="hero-thoughts">
+            <span>One gentle plan for the day</span>
+            <span>One safe place for your thoughts</span>
+            <span>One lovely corner for bigger dreams</span>
+          </div>
+        </div>
+        <div class="hero-side">
+          <div class="mini-stat">
+            <span class="mini-label">Timezone</span>
+            <strong id="timezone-label">Asia/Colombo</strong>
+          </div>
+          <div class="mini-stat">
+            <span class="mini-label">Mode</span>
+            <strong>Local and private</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="workspace">
+        <aside class="rail card">
+          <button class="tab active" data-tab="day">Day Plan</button>
+          <button class="tab" data-tab="diary">Diary</button>
+          <button class="tab" data-tab="book">Book</button>
+
+          <div class="rail-note">
+            <p class="rail-title">How it works</p>
+            <p>
+              Build your day plan from a prompt or edit it manually. Diary and book entries are
+              saved separately and never attached to the plan email.
+            </p>
+          </div>
+        </aside>
+
+        <section class="panel-stack">
+          <section class="panel card active" id="panel-day">
+            <div class="panel-head">
+              <div>
+                <p class="eyebrow">Daily orchestration</p>
+                <h2>Shape the day before you send it</h2>
+              </div>
+              <p class="status" id="plan-status">Ready</p>
+            </div>
+
+            <div class="prompt-card">
+              <label class="field-label" for="plan-prompt">Describe the day you actually want</label>
+              <textarea id="plan-prompt" placeholder="Example: Plan my day around client work from 9 to 4, gym at 6, and dinner with Dulan at 8."></textarea>
+              <div class="prompt-actions">
+                <button class="btn btn-primary" id="generate-plan">Generate plan</button>
+                <button class="btn btn-ghost" id="clear-plan">Clear</button>
+              </div>
+            </div>
+
+            <div class="editor-grid">
+              <div class="form-column">
+                <div class="form-grid">
+                  <label>
+                    <span class="field-label">Plan date</span>
+                    <input id="plan-date" type="date">
+                  </label>
+                  <label class="wide">
+                    <span class="field-label">Summary</span>
+                    <textarea id="plan-summary" placeholder="A calm headline for the day."></textarea>
+                  </label>
+                  <label>
+                    <span class="field-label">Top 1</span>
+                    <input id="top-1" type="text" placeholder="Most important thing">
+                  </label>
+                  <label>
+                    <span class="field-label">Top 2</span>
+                    <input id="top-2" type="text" placeholder="Second anchor">
+                  </label>
+                  <label>
+                    <span class="field-label">Top 3</span>
+                    <input id="top-3" type="text" placeholder="Third anchor">
+                  </label>
+                  <label class="wide">
+                    <span class="field-label">Notes</span>
+                    <textarea id="plan-notes" placeholder="Short notes, one per line."></textarea>
+                  </label>
+                </div>
+
+                <div class="art-card" aria-hidden="true">
+                  <div class="image-card image-card-art">
+                    <img
+                      class="image-fill"
+                      src="/assets/images/day-plan-art.jpg"
+                      alt="Calm floral self-care artwork"
+                      loading="lazy"
+                    >
+                    <div class="art-frame">
+                      <span class="petal petal-a"></span>
+                      <span class="petal petal-b"></span>
+                      <span class="petal petal-c"></span>
+                      <span class="petal petal-d"></span>
+                      <span class="sun-mini"></span>
+                      <span class="moon-mini"></span>
+                      <span class="hill hill-a"></span>
+                      <span class="hill hill-b"></span>
+                      <span class="stem stem-a"></span>
+                      <span class="stem stem-b"></span>
+                      <span class="bloom bloom-a"></span>
+                      <span class="bloom bloom-b"></span>
+                    </div>
+                  </div>
+                  <p class="art-caption">A soft little corner for your day.</p>
+                </div>
+              </div>
+
+              <div class="schedule-card">
+                <div class="schedule-head">
+                  <div>
+                    <p class="eyebrow">Timeline</p>
+                    <h3>Daily blocks</h3>
+                  </div>
+                  <button class="btn btn-secondary" id="add-row">Add block</button>
+                </div>
+                <div id="schedule-list" class="schedule-list"></div>
+              </div>
+            </div>
+
+            <div class="action-row">
+              <button class="btn btn-primary" id="save-plan">Save day plan</button>
+              <button class="btn btn-accent" id="send-plan">Send to Boyfriend</button>
+            </div>
+          </section>
+
+          <section class="panel card" id="panel-diary">
+            <div class="panel-head">
+              <div>
+                <p class="eyebrow">Private writing</p>
+                <h2>Diary</h2>
+              </div>
+              <p class="status" id="diary-status">Ready</p>
+            </div>
+
+            <div class="writing-grid">
+              <div class="editor-card">
+                <label>
+                  <span class="field-label">Title</span>
+                  <input id="diary-title" type="text" placeholder="How today feels">
+                </label>
+                <label>
+                  <span class="field-label">Entry</span>
+                  <textarea id="diary-content" class="tall" placeholder="Write freely. This stays as diary content and is not part of the plan email."></textarea>
+                </label>
+                <button class="btn btn-primary" id="save-diary">Save diary</button>
+              </div>
+              <div class="library-card">
+                <p class="eyebrow">Saved diary entries</p>
+                <div class="image-card image-card-side">
+                  <img
+                    class="image-fill"
+                    src="/assets/images/diary-calm.jpg"
+                    alt="Meditation artwork"
+                    loading="lazy"
+                  >
+                  <div class="side-fallback side-fallback-diary" aria-hidden="true"></div>
+                </div>
+                <div id="diary-list" class="document-list"></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel card" id="panel-book">
+            <div class="panel-head">
+              <div>
+                <p class="eyebrow">Long-form drafting</p>
+                <h2>Book</h2>
+              </div>
+              <p class="status" id="book-status">Ready</p>
+            </div>
+
+            <div class="writing-grid">
+              <div class="editor-card">
+                <label>
+                  <span class="field-label">Chapter or idea</span>
+                  <input id="book-title" type="text" placeholder="Chapter one">
+                </label>
+                <label>
+                  <span class="field-label">Draft</span>
+                  <textarea id="book-content" class="tall" placeholder="Keep your longer writing here. It will save separately from the day plan."></textarea>
+                </label>
+                <button class="btn btn-primary" id="save-book">Save book note</button>
+              </div>
+              <div class="library-card">
+                <p class="eyebrow">Saved book notes</p>
+                <div class="image-card image-card-side">
+                  <img
+                    class="image-fill"
+                    src="/assets/images/book-dreamscape.jpg"
+                    alt="Sunrise meditation artwork"
+                    loading="lazy"
+                  >
+                  <div class="side-fallback side-fallback-book" aria-hidden="true"></div>
+                </div>
+                <div id="book-list" class="document-list"></div>
+              </div>
+            </div>
+          </section>
+        </section>
+      </section>
+    </main>
+
+    <template id="schedule-row-template">
+      <article class="schedule-row">
+        <label class="row-time">
+          <span class="field-label">Time</span>
+          <div class="time-fields">
+            <select data-field="hour" aria-label="Hour"></select>
+            <span class="time-divider">:</span>
+            <select data-field="minute" aria-label="Minute"></select>
+            <select data-field="meridiem" aria-label="AM or PM">
+              <option value="AM">AM</option>
+              <option value="PM">PM</option>
+            </select>
+          </div>
+        </label>
+        <label class="row-title">
+          <span class="field-label">Activity</span>
+          <input data-field="title" type="text" placeholder="Activity title">
+        </label>
+        <label class="row-duration">
+          <span class="field-label">Minutes</span>
+          <input data-field="duration" type="number" min="0" step="5" value="60">
+        </label>
+        <label class="row-participants">
+          <span class="field-label">Participants</span>
+          <input data-field="participants" type="text" placeholder="Me, Dulan">
+        </label>
+        <div class="row-invite">
+          <span class="field-label">Invite</span>
+          <input data-field="invite" type="checkbox" hidden>
+          <button class="invite-toggle" type="button" aria-pressed="false">Invite</button>
+        </div>
+        <button class="remove-row row-remove" type="button" aria-label="Remove block">Remove</button>
+      </article>
+    </template>
+
+    <script src="/assets/app.js"></script>
+  </body>
+</html>
