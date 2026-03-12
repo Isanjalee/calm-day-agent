@@ -2,6 +2,7 @@ import json
 import re
 from datetime import datetime
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 from calendar_utils import build_calendar_attachments, extract_shared_events
 from config import AppConfig
@@ -97,7 +98,11 @@ def _clean_text_list(value, *, limit: int | None = None) -> list[str]:
 
 
 def _is_valid_time(value: str) -> bool:
-    return bool(re.match(r"^\d{2}:\d{2}$", value or ""))
+    try:
+        datetime.strptime(value or "", "%H:%M")
+    except ValueError:
+        return False
+    return True
 
 
 def _normalize_schedule(schedule, config: AppConfig) -> list[dict]:
@@ -132,11 +137,13 @@ def _normalize_schedule(schedule, config: AppConfig) -> list[dict]:
             text = str(name).strip()
             if not text:
                 continue
+
             lowered = text.lower()
             if lowered in {"me", "myself", config.user_name.lower()}:
                 text = config.user_name
-            elif lowered == config.partner_name.lower():
+            elif lowered in {"partner", "boyfriend", config.partner_name.lower()}:
                 text = config.partner_name
+
             key = text.lower()
             if key in seen:
                 continue
@@ -172,51 +179,49 @@ def _display_participants(participants: list[str], config: AppConfig) -> str:
 
 
 def _partner_display_name(config: AppConfig) -> str:
-    name = (config.partner_name or "").strip()
-    if not name or name.lower() == "boyfriend":
-        return "Dulan"
-    return name
+    return (config.partner_name or "").strip() or "your partner"
 
 
 def _participant_suffix(participants: list[str], config: AppConfig) -> str:
     names = [str(name).strip().lower() for name in participants or [] if str(name).strip()]
     my_name = config.user_name.lower()
     partner_name = _partner_display_name(config).lower()
+    partner_label = _partner_display_name(config)
 
     has_me = any(name in {"me", "myself", my_name} for name in names)
     has_partner = partner_name in names or "partner" in names or "boyfriend" in names
 
     if has_me and has_partner:
-        return " | with Me and my lovely hubby 💖"
+        return f" | with Me and {partner_label}"
     if has_me or not names:
-        return " | 🐼"
+        return " | solo"
     return f" | with {_display_participants(participants, config)}"
 
 
-def _schedule_emoji(title: str, participants: list[str], config: AppConfig) -> str:
+def _schedule_marker(title: str, participants: list[str], config: AppConfig) -> str:
     text = str(title or "").lower()
     participant_names = {str(name).strip().lower() for name in participants or []}
     shared = config.partner_name.lower() in participant_names and config.user_name.lower() in participant_names
 
     if "work" in text:
-        return "💻" if not shared else "✨"
+        return "[Work]" if not shared else "[Shared]"
     if "study" in text or "learning" in text or "english" in text or "german" in text:
-        return "📚"
+        return "[Study]"
     if "lunch" in text or "dinner" in text or "breakfast" in text:
-        return "🍽️"
+        return "[Meal]"
     if "worship" in text or "pray" in text:
-        return "🤍"
+        return "[Prayer]"
     if "help" in text or "family" in text or "mom" in text:
-        return "🌸"
+        return "[Family]"
     if "rest" in text or "quiet" in text or "wait" in text or "wind" in text:
-        return "🌙"
+        return "[Rest]"
     if "exercise" in text or "walk" in text or "gym" in text:
-        return "🌿"
+        return "[Exercise]"
     if "reset" in text:
-        return "🍃"
+        return "[Reset]"
     if shared:
-        return "✨"
-    return "🌼"
+        return "[Shared]"
+    return ""
 
 
 def _format_email_time(value: str) -> str:
@@ -241,6 +246,13 @@ def is_valid_plan(plan: dict) -> bool:
         and isinstance(plan.get("schedule"), list)
         and len(plan["schedule"]) > 0
     )
+
+
+def _today_for_timezone(timezone_name: str) -> str:
+    try:
+        return datetime.now(ZoneInfo(timezone_name)).strftime("%Y-%m-%d")
+    except Exception:
+        return datetime.now().strftime("%Y-%m-%d")
 
 
 def fallback_plan(today: str, config: AppConfig) -> dict:
@@ -279,7 +291,7 @@ def fallback_plan(today: str, config: AppConfig) -> dict:
 
 
 def normalize_plan(plan: dict, config: AppConfig, *, fallback_date: str | None = None) -> dict:
-    today = fallback_date or datetime.now().strftime("%Y-%m-%d")
+    today = fallback_date or _today_for_timezone(config.timezone)
     if not isinstance(plan, dict):
         return fallback_plan(today, config)
 
@@ -301,13 +313,13 @@ def normalize_plan(plan: dict, config: AppConfig, *, fallback_date: str | None =
 
 
 def generate_plan(user_message: str, config: AppConfig, prefs: dict | None = None) -> dict:
-    today = datetime.now().strftime("%Y-%m-%d")
+    today = _today_for_timezone(config.timezone)
     prompt = f"""{build_planner_system(config)}
 
 TODAY: {today}
 
 USER_MESSAGE:
-{(user_message or '').strip()}
+{(user_message or "").strip()}
 
 PREFERENCES_JSON:
 {json.dumps(prefs or {}, ensure_ascii=False)}
@@ -327,55 +339,53 @@ def format_plan_for_email(plan: dict, config: AppConfig) -> str:
     shared_events = extract_shared_events(normalized_plan, config)
     partner_name = _partner_display_name(config)
     lines = [
-        f"Hi {partner_name} 🐧",
+        f"Hi {partner_name},",
         "",
-        "I made a small calm plan for today and wanted to share it with you. "
-        "Think of it like a soft little roadmap for the day - with a bit of focus, "
-        "a bit of care, and a lot of good energy 🌤️",
+        "I made a small calm plan for today and wanted to share it with you.",
+        "Think of it as a simple roadmap for the day with a bit of focus and a bit of care.",
         "",
-        f"Calm Day - Plan for Today ({normalized_plan.get('date', '')})",
+        f"Calm Day plan for today ({normalized_plan.get('date', '')})",
         "",
     ]
 
     if normalized_plan.get("top_3"):
-        lines.append("Top 3 for the day 🌱")
+        lines.append("Top 3 for the day")
         lines.append("")
         for index, item in enumerate(normalized_plan["top_3"], 1):
             lines.append(f"{index}. {item}")
         lines.append("")
 
-    lines.append("Schedule 🕰️")
+    lines.append("Schedule")
     lines.append("")
     for item in normalized_plan.get("schedule", []):
         participant_text = _participant_suffix(item.get("participants", []), config)
-        emoji = _schedule_emoji(item.get("title", ""), item.get("participants", []), config)
+        marker = _schedule_marker(item.get("title", ""), item.get("participants", []), config)
+        marker_suffix = f" {marker}" if marker else ""
         lines.append(
             f"{_format_email_time(item.get('time', ''))} - {item.get('title', '')} "
-            f"({item.get('duration_min', '')} min){participant_text} {emoji}"
+            f"({item.get('duration_min', '')} min){participant_text}{marker_suffix}"
         )
     lines.append("")
 
     if normalized_plan.get("notes"):
-        lines.append("Little Notes 🌷")
+        lines.append("Notes")
         for note in normalized_plan["notes"]:
-            lines.append(f"• {note}")
+            lines.append(f"- {note}")
         if shared_events:
-            lines.append("• Only the shared items will be sent as calendar invites.")
+            lines.append("- Only shared items will be sent as calendar invites.")
         lines.append("")
     elif shared_events:
-        lines.append("Little Notes 🌷")
-        lines.append("• Only the shared items will be sent as calendar invites.")
+        lines.append("Notes")
+        lines.append("- Only shared items will be sent as calendar invites.")
         lines.append("")
 
     lines.extend(
         [
-            "Sending this to you with tiny stars, soft clouds, and a happy heart ✨☁️",
             "Hope your day goes smoothly too.",
             "",
-            "From my chooty heart to yours 💛",
             "Have a beautiful day.",
             "",
-            "— Calm Day",
+            "Calm Day",
         ]
     )
     return "\n".join(lines)
@@ -392,7 +402,7 @@ def send_plan_email(plan: dict, config: AppConfig) -> str:
     if LOVE_IMAGE_PATH.exists():
         file_attachments.append({"path": str(LOVE_IMAGE_PATH), "filename": "love1.jpg"})
     return send_email(
-        subject=f"🌙✨ A beautiful little day plan from {config.user_name} 💖",
+        subject=f"A beautiful little day plan from {config.user_name}",
         body=format_plan_for_email(normalized_plan, config),
         sender=config.sender_email,
         password=config.email_password,

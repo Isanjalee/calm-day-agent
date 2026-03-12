@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" role="img" aria-labelledby="title desc">
+  <title id="title">Calm Day Studio logo</title>
+  <desc id="desc">A sunrise over soft hills with a crescent moon.</desc>
+  <defs>
+    <linearGradient id="sky" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f9d9a7" />
+      <stop offset="100%" stop-color="#f08f6e" />
+    </linearGradient>
+    <linearGradient id="hillA" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#29544f" />
+      <stop offset="100%" stop-color="#4e7d74" />
+    </linearGradient>
+    <linearGradient id="hillB" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#183732" />
+      <stop offset="100%" stop-color="#2f5b54" />
+    </linearGradient>
+  </defs>
+  <rect width="160" height="160" rx="36" fill="url(#sky)" />
+  <circle cx="78" cy="58" r="24" fill="#fff2c6" />
+  <circle cx="111" cy="45" r="13" fill="#f7eee1" />
+  <circle cx="116" cy="42" r="13" fill="#f08f6e" />
+  <path d="M0 110c18-20 38-30 60-30 17 0 31 5 45 14 18 11 34 16 55 16v50H0z" fill="url(#hillA)" />
+  <path d="M0 124c22-18 44-27 68-27 21 0 37 7 55 18 13 8 25 11 37 11v34H0z" fill="url(#hillB)" />
+  <path d="M80 30v56" stroke="#fff9ea" stroke-linecap="round" stroke-width="6" opacity="0.72" />
+  <path d="M52 58h56" stroke="#fff9ea" stroke-linecap="round" stroke-width="6" opacity="0.72" />
+</svg>

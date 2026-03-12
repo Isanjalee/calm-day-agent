@@ -3,7 +3,7 @@ import mimetypes
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from urllib.parse import urlparse
+from urllib.parse import unquote, urlparse
 
 from dotenv import load_dotenv
 
@@ -13,6 +13,7 @@ from planner_service import generate_plan, normalize_plan, send_plan_email
 
 ROOT_DIR = Path(__file__).resolve().parent
 WEB_DIR = ROOT_DIR / "web"
+ASSETS_DIR = (WEB_DIR / "assets").resolve()
 
 load_dotenv()
 
@@ -58,6 +59,15 @@ def _public_state() -> dict:
     }
 
 
+def _resolve_asset_path(relative_path: str) -> Path | None:
+    candidate = (ASSETS_DIR / Path(unquote(relative_path))).resolve()
+    try:
+        candidate.relative_to(ASSETS_DIR)
+    except ValueError:
+        return None
+    return candidate
+
+
 class CalmDayHandler(BaseHTTPRequestHandler):
     def log_message(self, fmt: str, *args):
         return
@@ -74,7 +84,15 @@ class CalmDayHandler(BaseHTTPRequestHandler):
 
         if parsed.path.startswith("/assets/"):
             relative = parsed.path.removeprefix("/assets/")
-            self._serve_file(WEB_DIR / "assets" / relative)
+            asset_path = _resolve_asset_path(relative)
+            if asset_path is None:
+                _json_response(
+                    self,
+                    {"ok": False, "error": "Invalid asset path."},
+                    status=HTTPStatus.NOT_FOUND,
+                )
+                return
+            self._serve_file(asset_path)
             return
 
         _json_response(
