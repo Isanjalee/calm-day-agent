@@ -7,6 +7,7 @@ const state = {
   },
   plan: null,
   documents: [],
+  editingBookId: "",
 };
 
 const elements = {
@@ -255,7 +256,8 @@ function renderDocuments(kind) {
   target.innerHTML = "";
 
   if (!docs.length) {
-    target.innerHTML = `<div class="document-card"><p>No ${kind} entries saved yet.</p></div>`;
+    const emptyLabel = kind === "book" ? "learning note" : kind;
+    target.innerHTML = `<div class="document-card"><p>No ${emptyLabel} entries saved yet.</p></div>`;
     return;
   }
 
@@ -263,11 +265,60 @@ function renderDocuments(kind) {
     const card = document.createElement("article");
     card.className = "document-card";
     const preview = doc.content.length > 180 ? `${doc.content.slice(0, 180)}...` : doc.content;
+    const actions = kind === "book"
+      ? `
+        <div class="document-actions">
+          <button class="btn btn-secondary doc-edit" type="button">Edit</button>
+          <button class="btn btn-accent doc-send" type="button">Send PDF</button>
+          <button class="btn btn-danger doc-delete" type="button">Delete</button>
+        </div>
+      `
+      : "";
     card.innerHTML = `
-      <h4>${escapeHtml(doc.title || kind)}</h4>
-      <p class="document-meta">Updated ${escapeHtml(doc.updated_at || "")}</p>
+      <div class="document-card-head">
+        <div>
+          <h4>${escapeHtml(doc.title || kind)}</h4>
+          <p class="document-meta">Updated ${escapeHtml(doc.updated_at || "")}</p>
+        </div>
+        ${actions}
+      </div>
       <p>${escapeHtml(preview)}</p>
     `;
+
+    if (kind === "book") {
+      card.querySelector(".doc-edit").addEventListener("click", () => {
+        state.editingBookId = doc.id || "";
+        elements.bookTitle.value = doc.title || "";
+        elements.bookContent.value = doc.content || "";
+        setStatus("book", "Learning note loaded for editing.");
+      });
+
+      card.querySelector(".doc-delete").addEventListener("click", async () => {
+        try {
+          const data = await request("/api/document/delete", { kind: "book", id: doc.id });
+          state.documents = state.documents.filter((item) => item.id !== doc.id);
+          renderDocuments("book");
+          setStatus("book", data.message || "Learning note deleted.");
+          if (state.editingBookId === doc.id) {
+            state.editingBookId = "";
+            elements.bookTitle.value = "";
+            elements.bookContent.value = "";
+          }
+        } catch (error) {
+          setStatus("book", error.message, true);
+        }
+      });
+
+      card.querySelector(".doc-send").addEventListener("click", async () => {
+        try {
+          setStatus("book", "Sending PDF...");
+          const data = await request("/api/document/send-pdf", { id: doc.id });
+          setStatus("book", data.message || `Sent to ${partnerName()}.`);
+        } catch (error) {
+          setStatus("book", error.message, true);
+        }
+      });
+    }
     target.appendChild(card);
   });
 }
@@ -332,7 +383,7 @@ async function loadState() {
   }
   if (elements.bookContent) {
     elements.bookContent.placeholder =
-    "Keep your longer writing here. It will save separately from the day plan.";
+    `Write what you learned today. Save first, then send the exact saved note to ${partnerName()} as a PDF.`;
   }
 
   renderPlan(state.plan);
@@ -415,13 +466,15 @@ elements.saveBook.addEventListener("click", async () => {
       kind: "book",
       title: elements.bookTitle.value.trim(),
       content: elements.bookContent.value.trim(),
+      id: state.editingBookId || undefined,
     });
     state.documents = [
       ...state.documents.filter((item) => item.id !== data.document.id),
       data.document,
     ].sort((a, b) => (a.updated_at < b.updated_at ? 1 : -1));
     renderDocuments("book");
-    setStatus("book", data.message || "Book note saved.");
+    setStatus("book", data.message || "Learning note saved.");
+    state.editingBookId = "";
     elements.bookTitle.value = "";
     elements.bookContent.value = "";
   } catch (error) {

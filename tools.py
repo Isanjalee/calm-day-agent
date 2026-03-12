@@ -3,7 +3,8 @@ from datetime import datetime
 from pathlib import Path
 from uuid import uuid4
 
-MEM_FILE = Path("memory.json")
+ROOT_DIR = Path(__file__).resolve().parent
+MEM_FILE = ROOT_DIR / "memory.json"
 DEFAULT_MEMORY = {"tasks": [], "plan": {}, "prefs": {}, "documents": []}
 
 
@@ -162,6 +163,44 @@ def list_documents(kind: str | None = None) -> list[dict]:
         key=lambda item: (item.get("updated_at", ""), item.get("created_at", "")),
         reverse=True,
     )
+
+
+def get_document(doc_id: str, kind: str | None = None) -> dict | None:
+    if not doc_id:
+        return None
+
+    for item in list_documents(kind):
+        if str(item.get("id", "")).strip() == str(doc_id).strip():
+            return item
+    return None
+
+
+def delete_document(doc_id: str, kind: str | None = None) -> dict | None:
+    data = _load_all()
+    documents = data.get("documents", [])
+    if not isinstance(documents, list):
+        return None
+
+    deleted = None
+    remaining = []
+    expected_kind = (kind or "").strip().lower()
+
+    for item in documents:
+        if not isinstance(item, dict):
+            continue
+        item_id = str(item.get("id", "")).strip()
+        item_kind = str(item.get("kind", "")).strip().lower()
+        if item_id == str(doc_id).strip() and (not expected_kind or item_kind == expected_kind) and deleted is None:
+            deleted = item
+            continue
+        remaining.append(item)
+
+    if deleted is None:
+        return None
+
+    data["documents"] = remaining
+    _save_all(data)
+    return deleted
 
 
 def get_state() -> dict:

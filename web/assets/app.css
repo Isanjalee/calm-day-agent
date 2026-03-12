@@ -777,6 +777,11 @@ select:focus {
   box-shadow: 0 14px 26px rgba(240, 141, 167, 0.24);
 }
 
+.btn-danger {
+  background: rgba(189, 102, 88, 0.12);
+  color: #a24b3e;
+}
+
 .btn-ghost,
 .remove-row,
 .invite-toggle {
@@ -1182,6 +1187,24 @@ select:focus {
   border: 1px solid rgba(29, 43, 42, 0.08);
 }
 
+.document-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.document-actions {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.document-actions .btn {
+  min-width: auto;
+  padding: 0.7rem 0.95rem;
+}
+
 .document-card h4 {
   margin: 0 0 0.35rem;
   font-size: 1rem;
@@ -1221,6 +1244,14 @@ select:focus {
   .editor-grid,
   .writing-grid {
     grid-template-columns: 1fr;
+  }
+
+  .document-card-head {
+    flex-direction: column;
+  }
+
+  .document-actions {
+    flex-wrap: wrap;
   }
 
   .hero {

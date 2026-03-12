@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 
 import tools
 from config import load_config
+from document_service import send_learning_note_email
 from planner_service import generate_plan, normalize_plan, send_plan_email
 
 ROOT_DIR = Path(__file__).resolve().parent
@@ -157,7 +158,68 @@ class CalmDayHandler(BaseHTTPRequestHandler):
                     "ok": True,
                     "document": document,
                     "documents": tools.list_documents(kind),
-                    "message": f"{kind.title()} saved.",
+                    "message": "Learning note saved." if kind == "book" else f"{kind.title()} saved.",
+                },
+            )
+            return
+
+        if parsed.path == "/api/document/delete":
+            kind = str(payload.get("kind", "")).strip().lower()
+            doc_id = str(payload.get("id", "")).strip()
+            if not doc_id:
+                _json_response(
+                    self,
+                    {"ok": False, "error": "Document id was required."},
+                    status=HTTPStatus.BAD_REQUEST,
+                )
+                return
+
+            deleted = tools.delete_document(doc_id, kind or None)
+            if deleted is None:
+                _json_response(
+                    self,
+                    {"ok": False, "error": "Document not found."},
+                    status=HTTPStatus.NOT_FOUND,
+                )
+                return
+
+            _json_response(
+                self,
+                {
+                    "ok": True,
+                    "document": deleted,
+                    "documents": tools.list_documents(kind or None),
+                    "message": "Learning note deleted." if kind == "book" else f"{kind.title() if kind else 'Document'} deleted.",
+                },
+            )
+            return
+
+        if parsed.path == "/api/document/send-pdf":
+            doc_id = str(payload.get("id", "")).strip()
+            if not doc_id:
+                _json_response(
+                    self,
+                    {"ok": False, "error": "Document id was required."},
+                    status=HTTPStatus.BAD_REQUEST,
+                )
+                return
+
+            document = tools.get_document(doc_id, "book")
+            if document is None:
+                _json_response(
+                    self,
+                    {"ok": False, "error": "Learning note not found."},
+                    status=HTTPStatus.NOT_FOUND,
+                )
+                return
+
+            result = send_learning_note_email(document, config)
+            _json_response(
+                self,
+                {
+                    "ok": result.lower().startswith("email sent"),
+                    "message": result,
+                    "document": document,
                 },
             )
             return

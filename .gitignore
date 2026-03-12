@@ -2,3 +2,10 @@
 .venv/
 __pycache__/
 memory.json
+.runtime-pdf/
+pdf-browser-profile/
+pdf-render-*/
+.pdf-render-*/
+pdf-edge-test.html
+tmp_sinhala_test.html
+tmp_unicode_check.pdf

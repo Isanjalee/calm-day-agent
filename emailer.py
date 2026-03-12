@@ -42,14 +42,21 @@ def send_email(
 
     sent_files = 0
     for attachment in file_attachments or []:
-        file_path = Path(str(attachment.get("path", "")))
-        if not file_path.exists() or not file_path.is_file():
-            continue
-
         part = MIMEBase("application", "octet-stream")
-        part.set_payload(file_path.read_bytes())
+        if "content" in attachment:
+            payload = attachment.get("content") or b""
+            if isinstance(payload, str):
+                payload = payload.encode("utf-8")
+            filename = attachment.get("filename") or "attachment.bin"
+        else:
+            file_path = Path(str(attachment.get("path", "")))
+            if not file_path.exists() or not file_path.is_file():
+                continue
+            payload = file_path.read_bytes()
+            filename = attachment.get("filename") or file_path.name
+
+        part.set_payload(payload)
         encoders.encode_base64(part)
-        filename = attachment.get("filename") or file_path.name
         part["Content-Disposition"] = f'attachment; filename="{filename}"'
         msg.attach(part)
         sent_files += 1

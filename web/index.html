@@ -30,7 +30,7 @@
           </div>
         </div>
         <div class="hero-copy">
-          <h1>Plan the day. Keep the diary. Draft the book.</h1>
+          <h1>Plan the day. Keep the diary. Save your learning notes.</h1>
           <div class="hero-thoughts">
             <span>One gentle plan for the day</span>
             <span>One safe place for your thoughts</span>
@@ -53,13 +53,13 @@
         <aside class="rail card">
           <button class="tab active" data-tab="day">Day Plan</button>
           <button class="tab" data-tab="diary">Diary</button>
-          <button class="tab" data-tab="book">Book</button>
+          <button class="tab" data-tab="book">Learning Notes</button>
 
           <div class="rail-note">
             <p class="rail-title">How it works</p>
             <p>
               Build your day plan from a prompt or edit it manually. Diary and
-              book entries are saved separately and never attached to the plan
+              learning notes are saved separately and never attached to the plan
               email.
             </p>
           </div>
@@ -208,9 +208,6 @@
                     placeholder="Write freely. This stays as diary content and is not part of the plan email."
                   ></textarea>
                 </label>
-                <button class="btn btn-primary" id="save-diary">
-                  Save diary
-                </button>
               </div>
               <div class="library-card">
                 <p class="eyebrow">Saved diary entries</p>
@@ -229,13 +226,19 @@
                 <div id="diary-list" class="document-list"></div>
               </div>
             </div>
+
+            <div class="action-row">
+              <button class="btn btn-primary" id="save-diary" type="button">
+                Save diary
+              </button>
+            </div>
           </section>
 
           <section class="panel card" id="panel-book">
             <div class="panel-head">
               <div>
-                <p class="eyebrow">Long-form drafting</p>
-                <h2>Book</h2>
+                <p class="eyebrow">Learning journal</p>
+                <h2>Learning Notes</h2>
               </div>
               <p class="status" id="book-status">Ready</p>
             </div>
@@ -243,27 +246,24 @@
             <div class="writing-grid">
               <div class="editor-card">
                 <label>
-                  <span class="field-label">Chapter or idea</span>
+                  <span class="field-label">Topic or lesson</span>
                   <input
                     id="book-title"
                     type="text"
-                    placeholder="Chapter one"
+                    placeholder="What I learned today"
                   />
                 </label>
                 <label>
-                  <span class="field-label">Draft</span>
+                  <span class="field-label">Note</span>
                   <textarea
                     id="book-content"
                     class="tall"
-                    placeholder="Keep your longer writing here. It will save separately from the day plan."
+                    placeholder="Write what you learned today. This can be saved and sent to Boyfriend as a PDF."
                   ></textarea>
                 </label>
-                <button class="btn btn-primary" id="save-book">
-                  Save book note
-                </button>
               </div>
               <div class="library-card">
-                <p class="eyebrow">Saved book notes</p>
+                <p class="eyebrow">Saved learning notes</p>
                 <div class="image-card image-card-side">
                   <img
                     class="image-fill"
@@ -278,6 +278,12 @@
                 </div>
                 <div id="book-list" class="document-list"></div>
               </div>
+            </div>
+
+            <div class="action-row">
+              <button class="btn btn-primary" id="save-book" type="button">
+                Save learning note
+              </button>
             </div>
           </section>
         </section>
