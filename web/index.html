@@ -51,39 +51,57 @@
 
       <section class="workspace">
         <aside class="rail card">
-          <button class="tab active" data-tab="day">Day Plan</button>
-          <button class="tab" data-tab="diary">Diary</button>
-          <button class="tab" data-tab="book">Learning Notes</button>
+          <nav class="rail-nav" aria-label="Primary sections">
+            <button class="tab active" data-tab="day">Day Plan</button>
+            <button class="tab" data-tab="diary">Diary</button>
+            <button class="tab" data-tab="book">Learning Notes</button>
+          </nav>
 
-          <div class="rail-note">
+          <section class="rail-note" aria-label="Usage notes">
             <p class="rail-title">How it works</p>
             <p>
               Build your day plan from a prompt or edit it manually. Diary and
               learning notes are saved separately and never attached to the plan
               email.
             </p>
-          </div>
+          </section>
         </aside>
 
         <section class="panel-stack">
           <section class="panel card active" id="panel-day">
-            <div class="panel-head">
+            <header class="panel-head">
               <div>
                 <p class="eyebrow">Daily orchestration</p>
                 <h2>Shape the day before you send it</h2>
               </div>
               <p class="status" id="plan-status">Ready</p>
-            </div>
+            </header>
 
-            <div class="prompt-card">
-              <label class="field-label" for="plan-prompt"
-                >Describe the day you actually want</label
+            <div class="panel-tools">
+              <nav
+                class="panel-switch"
+                data-panel-switch="day"
+                aria-label="Day plan views"
               >
-              <textarea
-                id="plan-prompt"
-                placeholder="Example: Plan my day around client work from 9 to 4, gym at 6, and dinner with Dulan at 8."
-              ></textarea>
-              <div class="prompt-actions">
+                <button
+                  class="panel-switch-btn active"
+                  type="button"
+                  data-panel="day"
+                  data-view-tab="overview"
+                >
+                  Plan
+                </button>
+                <button
+                  class="panel-switch-btn"
+                  type="button"
+                  data-panel="day"
+                  data-view-tab="timeline"
+                >
+                  Timeline
+                </button>
+              </nav>
+
+              <div class="prompt-actions prompt-action-strip">
                 <button class="btn btn-primary" id="generate-plan">
                   Generate plan
                 </button>
@@ -91,46 +109,64 @@
               </div>
             </div>
 
-            <div class="editor-grid">
-              <div class="form-column">
-                <div class="form-grid">
-                  <label>
-                    <span class="field-label">Plan date</span>
-                    <input id="plan-date" type="date" />
-                  </label>
-                  <label class="wide">
-                    <span class="field-label">Summary</span>
+            <section
+              class="panel-view active panel-view-overview"
+              data-panel="day"
+              data-view="overview"
+            >
+              <section class="editor-grid day-grid panel-section">
+                <section class="form-column day-plan-content" aria-label="Plan details">
+                  <section class="prompt-card day-prompt-card">
+                    <label class="field-label" for="plan-prompt"
+                      >Describe the day you actually want</label
+                    >
                     <textarea
-                      id="plan-summary"
-                      placeholder="A calm headline for the day."
+                      id="plan-prompt"
+                      placeholder="Example: Plan my day around client work from 9 to 4, gym at 6, and dinner with Dulan at 8."
                     ></textarea>
-                  </label>
-                  <label>
-                    <span class="field-label">Top 1</span>
-                    <input
-                      id="top-1"
-                      type="text"
-                      placeholder="Most important thing"
-                    />
-                  </label>
-                  <label>
-                    <span class="field-label">Top 2</span>
-                    <input id="top-2" type="text" placeholder="Second anchor" />
-                  </label>
-                  <label>
-                    <span class="field-label">Top 3</span>
-                    <input id="top-3" type="text" placeholder="Third anchor" />
-                  </label>
-                  <label class="wide">
-                    <span class="field-label">Notes</span>
-                    <textarea
-                      id="plan-notes"
-                      placeholder="Short notes, one per line."
-                    ></textarea>
-                  </label>
-                </div>
+                  </section>
 
-                <div class="art-card" aria-hidden="true">
+                  <section class="editor-card day-details-card">
+                    <div class="form-grid">
+                      <label>
+                        <span class="field-label">Plan date</span>
+                        <input id="plan-date" type="date" />
+                      </label>
+                      <label class="wide">
+                        <span class="field-label">Summary</span>
+                        <textarea
+                          id="plan-summary"
+                          placeholder="A calm headline for the day."
+                        ></textarea>
+                      </label>
+                      <label>
+                        <span class="field-label">Top 1</span>
+                        <input
+                          id="top-1"
+                          type="text"
+                          placeholder="Most important thing"
+                        />
+                      </label>
+                      <label>
+                        <span class="field-label">Top 2</span>
+                        <input id="top-2" type="text" placeholder="Second anchor" />
+                      </label>
+                      <label>
+                        <span class="field-label">Top 3</span>
+                        <input id="top-3" type="text" placeholder="Third anchor" />
+                      </label>
+                      <label class="wide">
+                        <span class="field-label">Notes</span>
+                        <textarea
+                          id="plan-notes"
+                          placeholder="Short notes, one per line."
+                        ></textarea>
+                      </label>
+                    </div>
+                  </section>
+                </section>
+
+                <aside class="art-card day-art-card" aria-hidden="true">
                   <div class="image-card image-card-art">
                     <img
                       class="image-fill"
@@ -154,10 +190,16 @@
                     </div>
                   </div>
                   <p class="art-caption">A soft little corner for your day.</p>
-                </div>
-              </div>
+                </aside>
+              </section>
+            </section>
 
-              <div class="schedule-card">
+            <section
+              class="panel-view panel-view-timeline"
+              data-panel="day"
+              data-view="timeline"
+            >
+              <section class="schedule-card panel-section">
                 <div class="schedule-head">
                   <div>
                     <p class="eyebrow">Timeline</p>
@@ -168,123 +210,227 @@
                   </button>
                 </div>
                 <div id="schedule-list" class="schedule-list"></div>
-              </div>
-            </div>
+              </section>
+            </section>
 
-            <div class="action-row">
+            <footer class="action-row">
               <button class="btn btn-primary" id="save-plan">
                 Save day plan
               </button>
               <button class="btn btn-accent" id="send-plan">
                 Send to Boyfriend
               </button>
-            </div>
+            </footer>
           </section>
 
           <section class="panel card" id="panel-diary">
-            <div class="panel-head">
+            <header class="panel-head">
               <div>
                 <p class="eyebrow">Private writing</p>
                 <h2>Diary</h2>
               </div>
               <p class="status" id="diary-status">Ready</p>
-            </div>
+            </header>
 
-            <div class="writing-grid">
-              <div class="editor-card">
-                <label>
-                  <span class="field-label">Title</span>
-                  <input
-                    id="diary-title"
-                    type="text"
-                    placeholder="How today feels"
-                  />
-                </label>
-                <label>
-                  <span class="field-label">Entry</span>
-                  <textarea
-                    id="diary-content"
-                    class="tall"
-                    placeholder="Write freely. This stays as diary content and is not part of the plan email."
-                  ></textarea>
-                </label>
-              </div>
-              <div class="library-card">
-                <p class="eyebrow">Saved diary entries</p>
-                <div class="image-card image-card-side">
-                  <img
-                    class="image-fill"
-                    src="/assets/images/diary-calm.jpg"
-                    alt="Meditation artwork"
-                    loading="lazy"
-                  />
-                  <div
-                    class="side-fallback side-fallback-diary"
-                    aria-hidden="true"
-                  ></div>
-                </div>
-                <div id="diary-list" class="document-list"></div>
-              </div>
-            </div>
+            <nav
+              class="panel-switch"
+              data-panel-switch="diary"
+              aria-label="Diary views"
+            >
+              <button
+                class="panel-switch-btn active"
+                type="button"
+                data-panel="diary"
+                data-view-tab="write"
+              >
+                Write
+              </button>
+              <button
+                class="panel-switch-btn"
+                type="button"
+                data-panel="diary"
+                data-view-tab="saved"
+              >
+                Saved
+              </button>
+            </nav>
 
-            <div class="action-row">
+            <section
+              class="panel-view active panel-view-write"
+              data-panel="diary"
+              data-view="write"
+            >
+              <section class="writing-grid writing-grid-balanced panel-section">
+                <section class="editor-card">
+                  <label>
+                    <span class="field-label">Title</span>
+                    <input
+                      id="diary-title"
+                      type="text"
+                      placeholder="How today feels"
+                    />
+                  </label>
+                  <label>
+                    <span class="field-label">Entry</span>
+                    <textarea
+                      id="diary-content"
+                      class="tall"
+                      placeholder="Write freely. This stays as diary content and is not part of the plan email."
+                    ></textarea>
+                  </label>
+                </section>
+                <aside class="library-card image-only-card" aria-hidden="true">
+                  <p class="eyebrow">Diary mood visual</p>
+                  <div class="image-card image-card-side">
+                    <img
+                      class="image-fill"
+                      src="/assets/images/diary-calm.jpg"
+                      alt="Meditation artwork"
+                      loading="lazy"
+                    />
+                    <div
+                      class="side-fallback side-fallback-diary"
+                      aria-hidden="true"
+                    ></div>
+                  </div>
+                </aside>
+              </section>
+            </section>
+
+            <section class="panel-view" data-panel="diary" data-view="saved">
+              <section class="writing-grid writing-grid-balanced panel-section">
+                <section class="library-card">
+                  <p class="eyebrow">Saved diary entries</p>
+                  <div id="diary-list" class="document-list"></div>
+                </section>
+                <aside class="library-card image-only-card" aria-hidden="true">
+                  <p class="eyebrow">Diary mood visual</p>
+                  <div class="image-card image-card-side">
+                    <img
+                      class="image-fill"
+                      src="/assets/images/diary-calm.jpg"
+                      alt="Meditation artwork"
+                      loading="lazy"
+                    />
+                    <div
+                      class="side-fallback side-fallback-diary"
+                      aria-hidden="true"
+                    ></div>
+                  </div>
+                </aside>
+              </section>
+            </section>
+
+            <footer class="action-row">
               <button class="btn btn-primary" id="save-diary" type="button">
                 Save diary
               </button>
-            </div>
+            </footer>
           </section>
 
           <section class="panel card" id="panel-book">
-            <div class="panel-head">
+            <header class="panel-head">
               <div>
                 <p class="eyebrow">Learning journal</p>
                 <h2>Learning Notes</h2>
               </div>
               <p class="status" id="book-status">Ready</p>
-            </div>
+            </header>
 
-            <div class="writing-grid">
-              <div class="editor-card">
-                <label>
-                  <span class="field-label">Topic or lesson</span>
-                  <input
-                    id="book-title"
-                    type="text"
-                    placeholder="What I learned today"
-                  />
-                </label>
-                <label>
-                  <span class="field-label">Note</span>
-                  <textarea
-                    id="book-content"
-                    class="tall"
-                    placeholder="Write what you learned today. This can be saved and sent to Boyfriend as a PDF."
-                  ></textarea>
-                </label>
-              </div>
-              <div class="library-card">
-                <p class="eyebrow">Saved learning notes</p>
-                <div class="image-card image-card-side">
-                  <img
-                    class="image-fill"
-                    src="/assets/images/book-dreamscape.jpg"
-                    alt="Sunrise meditation artwork"
-                    loading="lazy"
-                  />
-                  <div
-                    class="side-fallback side-fallback-book"
-                    aria-hidden="true"
-                  ></div>
-                </div>
-                <div id="book-list" class="document-list"></div>
-              </div>
-            </div>
+            <nav
+              class="panel-switch"
+              data-panel-switch="book"
+              aria-label="Learning note views"
+            >
+              <button
+                class="panel-switch-btn active"
+                type="button"
+                data-panel="book"
+                data-view-tab="write"
+              >
+                Write
+              </button>
+              <button
+                class="panel-switch-btn"
+                type="button"
+                data-panel="book"
+                data-view-tab="saved"
+              >
+                Saved
+              </button>
+            </nav>
 
-            <div class="action-row">
+            <section
+              class="panel-view active panel-view-write"
+              data-panel="book"
+              data-view="write"
+            >
+              <section class="writing-grid writing-grid-balanced panel-section">
+                <section class="editor-card">
+                  <label>
+                    <span class="field-label">Topic or lesson</span>
+                    <input
+                      id="book-title"
+                      type="text"
+                      placeholder="What I learned today"
+                    />
+                  </label>
+                  <label>
+                    <span class="field-label">Note</span>
+                    <textarea
+                      id="book-content"
+                      class="tall"
+                      placeholder="Write what you learned today. This can be saved and sent to Boyfriend as a PDF."
+                    ></textarea>
+                  </label>
+                </section>
+                <aside class="library-card image-only-card" aria-hidden="true">
+                  <p class="eyebrow">Learning visual</p>
+                  <div class="image-card image-card-side">
+                    <img
+                      class="image-fill"
+                      src="/assets/images/book-dreamscape.jpg"
+                      alt="Sunrise meditation artwork"
+                      loading="lazy"
+                    />
+                    <div
+                      class="side-fallback side-fallback-book"
+                      aria-hidden="true"
+                    ></div>
+                  </div>
+                </aside>
+              </section>
+            </section>
+
+            <section class="panel-view" data-panel="book" data-view="saved">
+              <section class="writing-grid writing-grid-balanced panel-section">
+                <section class="library-card">
+                  <p class="eyebrow">Saved learning notes</p>
+                  <div id="book-list" class="document-list"></div>
+                </section>
+                <aside class="library-card image-only-card" aria-hidden="true">
+                  <p class="eyebrow">Learning visual</p>
+                  <div class="image-card image-card-side">
+                    <img
+                      class="image-fill"
+                      src="/assets/images/book-dreamscape.jpg"
+                      alt="Sunrise meditation artwork"
+                      loading="lazy"
+                    />
+                    <div
+                      class="side-fallback side-fallback-book"
+                      aria-hidden="true"
+                    ></div>
+                  </div>
+                </aside>
+              </section>
+            </section>
+
+            <footer class="action-row">
               <button class="btn btn-primary" id="save-book" type="button">
                 Save learning note
               </button>
-            </div>
+            </footer>
           </section>
         </section>
       </section>
