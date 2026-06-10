@@ -12,6 +12,8 @@ const state = {
 
 const elements = {
   tabs: [...document.querySelectorAll(".tab")],
+  panelViewTabs: [...document.querySelectorAll(".panel-switch-btn")],
+  panelViews: [...document.querySelectorAll(".panel-view")],
   panels: {
     day: document.getElementById("panel-day"),
     diary: document.getElementById("panel-diary"),
@@ -81,6 +83,22 @@ function switchTab(tabId) {
     const active = tab.dataset.tab === tabId;
     tab.classList.toggle("active", active);
     elements.panels[tab.dataset.tab].classList.toggle("active", active);
+  });
+}
+
+function switchPanelView(panelId, viewId) {
+  elements.panelViewTabs.forEach((tab) => {
+    if (tab.dataset.panel !== panelId) {
+      return;
+    }
+    tab.classList.toggle("active", tab.dataset.viewTab === viewId);
+  });
+
+  elements.panelViews.forEach((view) => {
+    if (view.dataset.panel !== panelId) {
+      return;
+    }
+    view.classList.toggle("active", view.dataset.view === viewId);
   });
 }
 
@@ -393,6 +411,12 @@ async function loadState() {
 
 elements.tabs.forEach((tab) => {
   tab.addEventListener("click", () => switchTab(tab.dataset.tab));
+});
+
+elements.panelViewTabs.forEach((tab) => {
+  tab.addEventListener("click", () => {
+    switchPanelView(tab.dataset.panel, tab.dataset.viewTab);
+  });
 });
 
 elements.generatePlan.addEventListener("click", async () => {
