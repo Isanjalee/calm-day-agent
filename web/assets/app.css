@@ -25,12 +25,14 @@
 }
 
 html {
+  height: 100%;
   scroll-behavior: smooth;
 }
 
 body {
   margin: 0;
-  min-height: 100vh;
+  min-height: 100dvh;
+  height: 100dvh;
   font-family:
     "Segoe UI Variable Display", "Trebuchet MS", "Gill Sans", sans-serif;
   color: var(--ink);
@@ -51,7 +53,7 @@ body {
       transparent 32%
     ),
     linear-gradient(180deg, var(--bg-top) 0%, var(--bg-bottom) 100%);
-  overflow-x: hidden;
+  overflow: hidden;
 }
 
 body::before,
@@ -123,9 +125,14 @@ body::after {
   width: 100%;
   max-width: none;
   margin: 0;
-  padding: 1rem 1rem 2rem;
+  height: 100%;
+  padding: 1rem;
   position: relative;
   z-index: 1;
+  display: grid;
+  grid-template-rows: minmax(160px, 22vh) minmax(0, 1fr);
+  gap: 1rem;
+  overflow: hidden;
 }
 
 .card {
@@ -140,8 +147,9 @@ body::after {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 280px;
   gap: 1.4rem;
-  min-height: 310px;
-  padding: 4.4rem 1.6rem 1.4rem;
+  min-height: 0;
+  height: 100%;
+  padding: 2.7rem 1.25rem 0.85rem;
   position: relative;
   overflow: hidden;
   animation: drift-up 650ms ease-out both;
@@ -178,7 +186,7 @@ body::after {
 }
 
 .hero h1 {
-  font-size: clamp(2.6rem, 3.5vw, 4rem);
+  font-size: clamp(1.9rem, 2.45vw, 2.9rem);
   max-width: none;
   letter-spacing: -0.03em;
   white-space: nowrap;
@@ -292,7 +300,7 @@ body::after {
 }
 
 .hero-thoughts span {
-  padding: 0.62rem 0.95rem;
+  padding: 0.42rem 0.78rem;
   border-radius: 999px;
   background: rgba(255, 251, 246, 0.68);
   border: 1px solid rgba(214, 186, 108, 0.28);
@@ -520,7 +528,7 @@ body::after {
   background: rgba(255, 255, 255, 0.56);
   border: 1px solid rgba(29, 43, 42, 0.08);
   border-radius: 999px;
-  padding: 0.62rem 0.9rem 0.68rem;
+  padding: 0.5rem 0.8rem 0.56rem;
   min-width: 180px;
   backdrop-filter: blur(16px);
 }
@@ -541,11 +549,13 @@ body::after {
 }
 
 .workspace {
-  margin-top: 1.5rem;
+  margin-top: 0;
   display: grid;
   grid-template-columns: 280px minmax(0, 1fr);
   gap: 1.4rem;
   align-items: stretch;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .rail {
@@ -553,16 +563,21 @@ body::after {
   display: flex;
   flex-direction: column;
   gap: 0.9rem;
-  position: sticky;
-  top: 1rem;
+  position: relative;
   align-self: stretch;
-  min-height: 100%;
+  min-height: 0;
   overflow: hidden;
   background:
     linear-gradient(180deg, rgba(255, 251, 246, 0.9), rgba(241, 249, 244, 0.88)),
     url("/assets/images/flower3.jpg") center/cover no-repeat;
   border: 1px solid rgba(255, 255, 255, 0.72);
   box-shadow: 0 24px 70px rgba(54, 61, 54, 0.11);
+}
+
+.rail-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
 }
 
 .tab {
@@ -612,16 +627,86 @@ body::after {
 
 .panel-stack {
   display: grid;
+  min-height: 0;
+  min-width: 0;
 }
 
 .panel {
   display: none;
-  padding: 1.85rem;
+  padding: 1.15rem;
+  min-height: 0;
+  min-width: 0;
+  height: 100%;
+  overflow: hidden;
+  flex-direction: column;
 }
 
 .panel.active {
-  display: block;
+  display: flex;
   animation: panel-rise 320ms ease both;
+}
+
+.panel-switch {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.panel-tools {
+  margin-top: 0.8rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.9rem;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.panel-head + .panel-switch {
+  margin-top: 0.8rem;
+}
+
+.panel-switch-btn {
+  border: 0;
+  border-radius: 999px;
+  padding: 0.6rem 1rem;
+  font: inherit;
+  font-weight: 700;
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.74);
+  cursor: pointer;
+  transition:
+    transform 160ms ease,
+    background 160ms ease,
+    color 160ms ease;
+}
+
+.panel-switch-btn.active {
+  background: linear-gradient(135deg, var(--teal), var(--teal-deep));
+  color: #f8f4ee;
+}
+
+.panel-view {
+  display: none;
+  min-height: 0;
+  min-width: 0;
+  flex: 1 1 auto;
+  overflow: hidden;
+}
+
+.panel-view.active {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 0.35rem;
+  scrollbar-gutter: stable;
+  animation: panel-rise 220ms ease both;
+}
+
+.panel-section {
+  min-height: 0;
+  min-width: 0;
 }
 
 .panel-head,
@@ -648,11 +733,13 @@ body::after {
 .schedule-card,
 .editor-card,
 .library-card {
-  margin-top: 1rem;
+  margin-top: 0.8rem;
   padding: 1.28rem;
   border-radius: var(--radius-xl);
   background: rgba(255, 255, 255, 0.62);
   border: 1px solid rgba(29, 43, 42, 0.08);
+  min-width: 0;
+  animation: content-lift 420ms ease both;
 }
 
 .prompt-card {
@@ -664,16 +751,84 @@ body::after {
 .writing-grid {
   margin-top: 1.15rem;
   display: grid;
-  grid-template-columns: minmax(420px, 0.92fr) minmax(560px, 1.08fr);
+  grid-template-columns: minmax(380px, 0.94fr) minmax(420px, 1.06fr);
   gap: 1.3rem;
   align-items: stretch;
+  min-height: 0;
+  min-width: 0;
+}
+
+.day-grid {
+  grid-template-columns: minmax(480px, 1.22fr) minmax(250px, 0.78fr);
+}
+
+.day-plan-content {
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 0.72rem;
+  align-content: start;
+}
+
+.day-plan-content .day-prompt-card,
+.day-plan-content .day-details-card {
+  margin-top: 0;
+}
+
+.day-prompt-card {
+  padding: 1.05rem 1.15rem;
+  background: rgba(255, 255, 255, 0.78);
+  border: 1px solid rgba(29, 43, 42, 0.12);
+  position: relative;
+  min-height: 220px;
+  display: grid;
+  align-content: start;
+  gap: 0.65rem;
+  overflow: visible;
+}
+
+.prompt-action-strip {
+  justify-content: flex-start;
+  align-items: center;
+  margin-top: 0;
+  padding: 0;
+  min-height: 0;
+  flex-wrap: wrap;
+}
+
+.panel-tools .btn,
+.panel-tools .panel-switch-btn {
+  margin-top: 0;
+}
+
+.day-prompt-card .field-label {
+  display: block;
+  margin-bottom: 0.42rem;
+  font-size: 0.92rem;
+  color: #53675f;
+}
+
+.day-details-card {
+  padding: 1.15rem;
+}
+
+.editor-grid-single,
+.writing-grid-single {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.writing-grid-balanced {
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 0.78fr);
 }
 
 .form-column {
   display: grid;
-  grid-template-rows: auto 1fr;
+  grid-template-rows: auto minmax(0, 1fr);
   gap: 1rem;
-  min-height: 100%;
+  min-height: 0;
+  min-width: 0;
+}
+
+.day-grid .form-column {
+  grid-template-rows: auto;
 }
 
 .form-grid {
@@ -720,7 +875,7 @@ select {
 }
 
 textarea {
-  min-height: 118px;
+  min-height: 96px;
   line-height: 1.58;
 }
 
@@ -730,7 +885,29 @@ select {
 }
 
 .tall {
-  min-height: 320px;
+  min-height: clamp(170px, 24vh, 260px);
+}
+
+#plan-prompt {
+  display: block;
+  min-height: 140px;
+  max-height: 220px;
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(29, 43, 42, 0.16);
+  resize: none;
+}
+
+#plan-summary,
+#plan-notes {
+  min-height: 62px;
+  max-height: 88px;
+  resize: none;
+}
+
+#diary-content,
+#book-content {
+  min-height: clamp(220px, 38vh, 520px);
+  max-height: none;
 }
 
 input:focus,
@@ -753,7 +930,9 @@ select:focus {
   transition:
     transform 160ms ease,
     opacity 160ms ease,
-    background 160ms ease;
+    background 160ms ease,
+    filter 160ms ease,
+    box-shadow 160ms ease;
 }
 
 .btn:disabled {
@@ -812,9 +991,13 @@ select:focus {
   grid-template-rows: 1fr auto;
 }
 
+.day-art-card {
+  margin-top: 0;
+}
+
 .art-frame {
   position: relative;
-  min-height: 220px;
+  min-height: clamp(140px, 22vh, 220px);
   height: 100%;
   overflow: hidden;
   background:
@@ -841,7 +1024,7 @@ select:focus {
 }
 
 .image-card-art {
-  min-height: 220px;
+  min-height: clamp(140px, 22vh, 220px);
 }
 
 .art-caption {
@@ -853,15 +1036,21 @@ select:focus {
 
 .image-card-side {
   margin-top: 0.25rem;
-  height: 600px;
-  min-height: 600px;
+  height: clamp(160px, 26vh, 320px);
+  min-height: clamp(160px, 26vh, 320px);
 }
 
 .side-fallback {
-  height: 600px;
-  min-height: 600px;
+  height: clamp(160px, 26vh, 320px);
+  min-height: clamp(160px, 26vh, 320px);
   background-size: cover;
   background-position: center;
+}
+
+.image-only-card {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  align-content: start;
 }
 
 .side-fallback-diary {
@@ -1050,10 +1239,97 @@ select:focus {
   display: grid;
   gap: 0.95rem;
   margin-top: 1rem;
-  max-height: 960px;
+  max-height: none;
+  overflow: hidden;
+  padding-right: 0;
+}
+
+.panel-view-timeline .schedule-card {
+  margin-top: 0;
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+.panel-view-timeline .schedule-list {
+  max-height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
-  padding-right: 0.2rem;
+  padding-right: 0.35rem;
+}
+
+.panel-view-overview {
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 0.25rem;
+}
+
+#panel-diary .writing-grid-balanced,
+#panel-book .writing-grid-balanced {
+  grid-template-columns: minmax(420px, 1.08fr) minmax(320px, 0.92fr);
+  height: 100%;
+  align-items: stretch;
+  margin-top: 0.95rem;
+}
+
+#panel-diary .image-only-card,
+#panel-book .image-only-card {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+#panel-diary .panel-view,
+#panel-book .panel-view {
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+#panel-diary .editor-card,
+#panel-book .editor-card,
+#panel-diary .library-card,
+#panel-book .library-card {
+  height: 100%;
+  min-height: 0;
+}
+
+#panel-diary .editor-card,
+#panel-book .editor-card {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  align-content: start;
+  gap: 1rem;
+}
+
+#panel-diary .library-card,
+#panel-book .library-card {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+#panel-diary .editor-card label,
+#panel-book .editor-card label {
+  min-width: 0;
+}
+
+#panel-diary .editor-card label:last-child,
+#panel-book .editor-card label:last-child {
+  min-height: 0;
+}
+
+#panel-diary #diary-list,
+#panel-book #book-list {
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-height: 100%;
+  padding-right: 0.25rem;
+}
+
+#panel-diary .image-only-card .image-card-side,
+#panel-diary .image-only-card .side-fallback,
+#panel-book .image-only-card .image-card-side,
+#panel-book .image-only-card .side-fallback {
+  height: clamp(300px, 52vh, 640px);
+  min-height: clamp(300px, 52vh, 640px);
 }
 
 .schedule-row {
@@ -1170,14 +1446,16 @@ select:focus {
 }
 
 .action-row {
-  margin-top: 1.2rem;
+  margin-top: auto;
   padding-top: 0.3rem;
+  flex-wrap: wrap;
 }
 
 .document-list {
   display: grid;
   gap: 0.9rem;
   margin-top: 0.9rem;
+  overflow: hidden;
 }
 
 .document-card {
@@ -1192,6 +1470,10 @@ select:focus {
   justify-content: space-between;
   align-items: flex-start;
   gap: 1rem;
+}
+
+.panel-head h2 {
+  font-size: clamp(1.22rem, 1.6vw, 1.62rem);
 }
 
 .document-actions {
@@ -1239,6 +1521,28 @@ select:focus {
   }
 }
 
+@keyframes content-lift {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 1ms !important;
+  }
+}
+
 @media (max-width: 1200px) {
   .hero,
   .editor-grid,
@@ -1275,17 +1579,16 @@ select:focus {
   }
 
   .workspace {
-    grid-template-columns: 1fr;
+    grid-template-columns: 240px minmax(0, 1fr);
   }
 
   .rail {
-    position: static;
-    flex-direction: row;
-    flex-wrap: wrap;
+    flex-direction: column;
+    flex-wrap: nowrap;
   }
 
   .rail-note {
-    width: 100%;
+    width: auto;
   }
 
   .schedule-row {
@@ -1303,14 +1606,26 @@ select:focus {
 }
 
 @media (max-width: 880px) {
+  body {
+    overflow: auto;
+  }
+
   .shell {
     width: 100%;
+    height: auto;
+    min-height: 100dvh;
     padding: 0.5rem 0.5rem 1rem;
+    overflow: visible;
+    grid-template-rows: auto auto;
   }
 
   .hero,
   .panel {
     padding: 1.15rem;
+  }
+
+  .hero h1 {
+    font-size: clamp(1.65rem, 8vw, 2.25rem);
   }
 
   .hero-copy {
@@ -1324,6 +1639,40 @@ select:focus {
 
   .hero-thoughts {
     justify-content: flex-start;
+  }
+
+  .workspace {
+    grid-template-columns: 1fr;
+    overflow: visible;
+  }
+
+  .day-grid,
+  .writing-grid-balanced {
+    grid-template-columns: 1fr;
+  }
+
+  .rail {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .rail-nav {
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .rail-note {
+    width: 100%;
+  }
+
+  .panel {
+    overflow: visible;
+  }
+
+  .panel-view {
+    overflow-y: auto;
+    overflow-x: hidden;
   }
 
   .form-grid {
